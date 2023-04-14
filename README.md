@@ -1,10 +1,10 @@
 # wtdisplay
 
-A work time display and tracker.
+A (live) work time display and tracker.
 
-## Get a live display (powershell)
+## Get a live display
 ```
-Clear; while ($true) { .\a.exe -s "6:08" | Out-Host; Sleep 5; Clear }
+wtdisplay -s "07:06:00" -i 1
 ```
 
 ## TODO
