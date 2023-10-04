@@ -88,14 +88,14 @@ void print_diff(int target_diff, char *target_diff_f, char *target_break) {
             abs(target_diff / 60 / 60), abs((target_diff / 60) % 60), target_break);
 }
 
-void update_display(struct params flags, char *input_time, struct tm start_time, struct tm time_now, int target_time) {
+void update_display(struct params flags, char *input_time, char *target_time_str, struct tm start_time, struct tm time_now, int target_time) {
     int netto_seconds, brutto_seconds, target_diff;
     char *target_break = "";
     char target_diff_f[13];
     do {
         clrscr();
         printf("Work started at: %s\n", input_time);
-        printf("Target time: 7:48h\n");
+        printf("Target time: %sh\n", target_time_str);
 
         // Calculate actual time at work
         brutto_seconds = (int) difftime(mktime(&time_now), mktime(&start_time));
@@ -116,6 +116,7 @@ int main(int argc, char **argv) {
     int hh, mm, ss;
     hh = mm = ss = 0;
     char input_time[] = "6:00";
+    char target_time_str[20] = "7:48";
 
     time_t now;
     time(&now);
@@ -123,7 +124,7 @@ int main(int argc, char **argv) {
     struct tm start_time = *localtime(&now);
     struct tm time_now = *localtime(&now);
 
-    int target_time = ((7 * 60) + 48) * 60;
+    int target_time = 0;
 
     struct params flags = {0, 0, 0, 0};
 
@@ -134,6 +135,7 @@ int main(int argc, char **argv) {
                 flags.start_time = 1;
                 break;
             case 't':
+		strcpy(target_time_str, optarg);
                 flags.target_time = 1;
                 break;
             case 'e':
@@ -151,10 +153,12 @@ int main(int argc, char **argv) {
         graceful_exit("Cannot specify a target time, when start and end time have been entered!");
     }
 
-    sscanf_s(input_time, "%d:%d:%d", &hh, &mm, &ss);
+    sscanf(input_time, "%d:%d:%d", &hh, &mm, &ss);
     start_time.tm_hour = hh;
     start_time.tm_min = mm;
     start_time.tm_sec = ss;
+    sscanf(target_time_str, "%d:%d:%d", &hh, &mm, &ss);
+    target_time = ((hh * 60) + mm) * 60 + ss;
 
-    update_display(flags, input_time, start_time, time_now, target_time);
+    update_display(flags, input_time, target_time_str, start_time, time_now, target_time);
 }
