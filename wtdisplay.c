@@ -88,12 +88,17 @@ void print_diff(int target_diff, char *target_diff_f, char *target_break) {
             abs(target_diff / 60 / 60), abs((target_diff / 60) % 60), target_break);
 }
 
-void update_display(struct params flags, char *input_time, char *target_time_str, struct tm start_time, struct tm time_now, int target_time) {
+void update_display(struct params flags, char *input_time, char *target_time_str, struct tm start_time, int target_time) {
     int netto_seconds, brutto_seconds, target_diff;
     char *target_break = "";
     char target_diff_f[13];
+    time_t now;
+
     do {
+        time(&now);  // Update current time
+        struct tm time_now = *localtime(&now);  // Update time_now with the current time
         clrscr();
+
         printf("Work started at: %s\n", input_time);
         printf("Target time: %sh\n", target_time_str);
 
@@ -109,6 +114,7 @@ void update_display(struct params flags, char *input_time, char *target_time_str
         sleep(flags.update_display);
     } while (flags.update_display != 0);
 }
+
 
 
 int main(int argc, char **argv) {
@@ -160,5 +166,5 @@ int main(int argc, char **argv) {
     sscanf(target_time_str, "%d:%d:%d", &hh, &mm, &ss);
     target_time = ((hh * 60) + mm) * 60 + ss;
 
-    update_display(flags, input_time, target_time_str, start_time, time_now, target_time);
+    update_display(flags, input_time, target_time_str, start_time, target_time);
 }
